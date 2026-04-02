@@ -1,16 +1,14 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GigScope — Live Map Dashboard (Demo)</title>
+  <title>GigScope — AI Economic Observatory</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Leaflet (OpenStreetMap) -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -23,196 +21,467 @@
     crossorigin=""
   ></script>
 
-  <!-- Leaflet.heat for heatmap -->
   <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <style>
     :root{
-      --bg:#0b1220;
-      --panel:#0f1a2e;
-      --panel2:#101f36;
-      --text:#e8eefc;
-      --muted:#93a4c7;
+      --bg:#07111f;
+      --panel:#0d1728;
+      --panel2:#101c31;
+      --glass:rgba(255,255,255,.05);
+      --text:#edf4ff;
+      --muted:#97a9c9;
       --border:rgba(255,255,255,.08);
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 18px;
+      --shadow:0 20px 50px rgba(0,0,0,.35);
+      --radius:20px;
+      --accent1:#60a5fa;
+      --accent2:#2dd4bf;
+      --accent3:#22c55e;
+      --danger:#ef4444;
+      --warning:#f59e0b;
     }
+
     *{box-sizing:border-box}
+
     body{
       margin:0;
-      font-family:"Cairo", system-ui, -apple-system, Segoe UI, Arial;
-      background:
-        radial-gradient(1200px 700px at 70% 20%, rgba(45,212,191,.12), transparent 60%),
-        radial-gradient(1000px 700px at 15% 70%, rgba(96,165,250,.10), transparent 60%),
-        var(--bg);
+      font-family:"Cairo",system-ui,-apple-system,Segoe UI,Arial,sans-serif;
       color:var(--text);
-    }
-    .app{
-      display:grid;
-      grid-template-columns: 280px 1fr;
+      background:
+        radial-gradient(900px 500px at 80% 10%, rgba(45,212,191,.14), transparent 60%),
+        radial-gradient(1000px 700px at 10% 80%, rgba(96,165,250,.12), transparent 60%),
+        linear-gradient(180deg,#07111f 0%, #08101d 100%);
       min-height:100vh;
     }
-    /* Sidebar */
+
+    .app{
+      display:grid;
+      grid-template-columns:290px 1fr;
+      min-height:100vh;
+    }
+
     .side{
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-      border-left:1px solid var(--border);
+      position:sticky;
+      top:0;
+      height:100vh;
       padding:18px 16px;
-      position:sticky; top:0; height:100vh;
-      backdrop-filter: blur(10px);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025));
+      border-right:1px solid var(--border);
+      backdrop-filter:blur(12px);
     }
+
     .brand{
-      display:flex; align-items:center; gap:10px;
-      padding:10px 10px 16px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px;
       border-bottom:1px solid var(--border);
-      margin-bottom:12px;
+      margin-bottom:14px;
     }
+
     .logo{
-      width:44px; height:44px; border-radius:14px;
-      background: linear-gradient(135deg, #60a5fa, #2dd4bf);
-      box-shadow: var(--shadow);
-      display:grid; place-items:center;
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      font-size:22px;
       font-weight:900;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      box-shadow:0 0 35px rgba(96,165,250,.25);
+      color:white;
     }
-    .brand h1{font-size:18px; margin:0; line-height:1.1}
-    .brand p{margin:0; color:var(--muted); font-size:12px}
-    .nav{display:flex; flex-direction:column; gap:8px; margin-top:12px}
-    .nav a{
-      padding:10px 12px;
-      border:1px solid transparent;
-      border-radius:14px;
+
+    .brand h1{
+      margin:0;
+      font-size:18px;
+      line-height:1.1;
+    }
+
+    .brand p{
+      margin:0;
       color:var(--muted);
-      display:flex; align-items:center; justify-content:space-between;
-      transition:.15s;
+      font-size:12px;
+    }
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .nav a{
       text-decoration:none;
+      color:var(--muted);
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid transparent;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      transition:.2s ease;
+      background:rgba(255,255,255,.015);
     }
+
+    .nav a:hover,
     .nav a.active{
-      background: rgba(45,212,191,.10);
-      border-color: rgba(45,212,191,.25);
       color:var(--text);
+      border-color:rgba(45,212,191,.22);
+      background:rgba(45,212,191,.08);
     }
-    .nav a:hover{border-color: var(--border); color:var(--text)}
+
     .tag{
       font-size:11px;
-      padding:2px 8px;
-      border-radius:999px;
       border:1px solid var(--border);
+      border-radius:999px;
+      padding:2px 8px;
       color:var(--muted);
     }
 
-    /* Main */
-    .main{padding:18px 18px 40px;}
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
-      margin-bottom:14px;
-    }
-    .title h2{margin:0; font-size:22px}
-    .title p{margin:0; color:var(--muted); font-size:13px}
-    .controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-    select, button{
-      background: rgba(255,255,255,.04);
-      border:1px solid var(--border);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius:14px;
-      outline:none;
-      font-family:inherit;
-    }
-    button{cursor:pointer; transition:.15s}
-    button:hover{transform: translateY(-1px); border-color: rgba(96,165,250,.35)}
     .pill{
-      display:inline-flex; gap:8px; align-items:center;
+      margin-top:16px;
+      display:flex;
+      align-items:center;
+      gap:8px;
       padding:10px 12px;
       border-radius:999px;
       border:1px solid var(--border);
-      background: rgba(255,255,255,.03);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:13px;
+      width:fit-content;
+    }
+
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--accent3);
+      box-shadow:0 0 10px var(--accent3);
+    }
+
+    .side-note{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .main{
+      padding:18px 18px 42px;
+    }
+
+    .strategic-header{
+      background:linear-gradient(90deg, rgba(15,23,42,.9), rgba(30,41,59,.95));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:20px;
+      padding:22px;
+      margin-bottom:16px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .strategic-header::after{
+      content:"";
+      position:absolute;
+      inset:auto -100px -100px auto;
+      width:260px;
+      height:260px;
+      background:radial-gradient(circle, rgba(45,212,191,.16), transparent 65%);
+      pointer-events:none;
+    }
+
+    .strategic-header h2{
+      margin:0 0 8px;
+      font-size:28px;
+    }
+
+    .strategic-header p{
+      margin:0;
+      color:#d7e5ff;
+      font-size:15px;
+      max-width:850px;
+      line-height:1.8;
+    }
+
+    .decision-strip{
+      margin-top:16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .decision-chip{
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+      color:#e6f0ff;
+      font-size:13px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+
+    .title h3{
+      margin:0;
+      font-size:22px;
+    }
+
+    .title p{
+      margin:2px 0 0;
       color:var(--muted);
       font-size:13px;
     }
-    .dot{width:8px;height:8px;border-radius:999px;background:#22c55e}
+
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    select, button{
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:10px 12px;
+      font-family:inherit;
+      outline:none;
+    }
+
+    button{
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    button:hover{
+      transform:translateY(-1px);
+      border-color:rgba(96,165,250,.35);
+    }
 
     .grid{
       display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap:12px;
+      grid-template-columns:repeat(12, 1fr);
+      gap:14px;
     }
+
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025));
       border:1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding:14px;
-      overflow:hidden;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
       position:relative;
+      overflow:hidden;
     }
-    .card h3{margin:0 0 8px; font-size:14px; color:var(--muted); font-weight:700}
+
+    .card::before{
+      content:"";
+      position:absolute;
+      top:-40px;
+      right:-40px;
+      width:120px;
+      height:120px;
+      background:radial-gradient(circle, rgba(96,165,250,.10), transparent 65%);
+      pointer-events:none;
+    }
+
+    .card h4{
+      margin:0 0 10px;
+      font-size:14px;
+      color:var(--muted);
+      font-weight:700;
+    }
+
     .kpi{
-      display:flex; align-items:flex-end; justify-content:space-between;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
       gap:12px;
     }
-    .value{font-size:28px; font-weight:900; letter-spacing:.3px; line-height:1.0}
-    .sub{color:var(--muted); font-size:12px}
+
+    .value{
+      font-size:30px;
+      font-weight:900;
+      line-height:1;
+      letter-spacing:.2px;
+    }
+
+    .sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.6;
+    }
+
     .delta{
-      font-weight:800; font-size:12px;
+      font-size:12px;
+      font-weight:800;
       padding:6px 10px;
       border-radius:999px;
-      border:1px solid var(--border);
-      background: rgba(34,197,94,.10);
-      color: #a7f3d0;
+      border:1px solid rgba(34,197,94,.25);
+      background:rgba(34,197,94,.12);
+      color:#bbf7d0;
       white-space:nowrap;
     }
-    .delta.bad{background: rgba(239,68,68,.10); color:#fecaca}
-    .span-3{grid-column: span 3;}
-    .span-4{grid-column: span 4;}
-    .span-5{grid-column: span 5;}
-    .span-6{grid-column: span 6;}
-    .span-8{grid-column: span 8;}
-    .span-12{grid-column: span 12;}
 
-    /* Map */
-    .mapWrap{
-      height: 420px;
-      padding:0;
+    .delta.bad{
+      border-color:rgba(239,68,68,.25);
+      background:rgba(239,68,68,.12);
+      color:#fecaca;
     }
+
+    .span-3{grid-column:span 3;}
+    .span-4{grid-column:span 4;}
+    .span-5{grid-column:span 5;}
+    .span-6{grid-column:span 6;}
+    .span-7{grid-column:span 7;}
+    .span-8{grid-column:span 8;}
+    .span-12{grid-column:span 12;}
+
+    .mapWrap{
+      padding:0;
+      height:450px;
+    }
+
     #map{
-      height: 420px;
-      width: 100%;
-      border-radius: var(--radius);
+      width:100%;
+      height:450px;
+      border-radius:var(--radius);
       overflow:hidden;
     }
-    /* Darken map a bit to match the mock */
+
     .leaflet-container{
-      filter: saturate(1.05) contrast(1.05) brightness(0.95);
+      filter:saturate(1.08) contrast(1.04) brightness(.92);
     }
+
     .leaflet-control-attribution{
       font-size:10px;
     }
 
-    /* Privacy */
-    .privacy{
-      display:flex; gap:12px; align-items:flex-start;
+    .map-overlay-label{
+      position:absolute;
+      top:14px;
+      left:14px;
+      z-index:500;
+      background:rgba(8,15,30,.78);
+      color:white;
+      border:1px solid rgba(255,255,255,.08);
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:13px;
+      backdrop-filter:blur(8px);
+      box-shadow:0 8px 25px rgba(0,0,0,.25);
     }
-    .shield{
-      width:40px; height:40px; border-radius:14px;
-      background: rgba(96,165,250,.12);
-      border:1px solid rgba(96,165,250,.25);
-      display:grid; place-items:center;
-      font-weight:900;
-      color: #cfe2ff;
-      flex:0 0 auto;
-    }
-    .privacy p{margin:0; color:var(--muted); font-size:13px; line-height:1.6}
-    .privacy ul{margin:8px 0 0; padding:0 18px; color:var(--muted); font-size:13px}
-    .footnote{margin-top:10px; color:rgba(147,164,199,.85); font-size:12px}
 
-    @media (max-width: 980px){
-      .app{grid-template-columns: 1fr;}
-      .side{position:relative; height:auto; border-left:none; border-bottom:1px solid var(--border)}
-      .span-3,.span-4,.span-5,.span-6,.span-8{grid-column: span 12;}
-      .mapWrap, #map{height:320px}
+    .section-text{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.8;
+      margin:0;
+    }
+
+    .feature-list{
+      margin:10px 0 0;
+      padding-left:18px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.9;
+    }
+
+    .impact-grid{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .impact-box{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+    }
+
+    .impact-box strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+      color:#f5f9ff;
+    }
+
+    .privacy{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+    }
+
+    .shield{
+      flex:0 0 auto;
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      background:rgba(96,165,250,.12);
+      border:1px solid rgba(96,165,250,.25);
+      color:#dbeafe;
+      font-size:20px;
+    }
+
+    .privacy p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.8;
+    }
+
+    .privacy ul{
+      margin:8px 0 0;
+      padding-left:18px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.8;
+    }
+
+    .footnote{
+      margin-top:10px;
+      color:#aebfdd;
+      font-size:12px;
+    }
+
+    @media (max-width:1080px){
+      .app{
+        grid-template-columns:1fr;
+      }
+      .side{
+        position:relative;
+        height:auto;
+        border-right:none;
+        border-bottom:1px solid var(--border);
+      }
+      .span-3,.span-4,.span-5,.span-6,.span-7,.span-8{
+        grid-column:span 12;
+      }
+      .impact-grid{
+        grid-template-columns:1fr;
+      }
+      .mapWrap,#map{
+        height:340px;
+      }
+      .strategic-header h2{
+        font-size:24px;
+      }
     }
   </style>
 </head>
@@ -224,127 +493,186 @@
       <div class="logo">G</div>
       <div>
         <h1>GigScope</h1>
-        <p>مرصد اقتصاد المنصات — Demo</p>
+        <p>AI-Powered Economic Observatory</p>
       </div>
     </div>
 
     <nav class="nav">
-      <a class="active" href="#" onclick="return false;">Dashboard <span class="tag">Live</span></a>
-      <a href="#" onclick="return false;">Activity Trends <span class="tag">Trends</span></a>
-      <a href="#" onclick="return false;">Market Insights <span class="tag">Insights</span></a>
-      <a href="#" onclick="return false;">Data Sources <span class="tag">Public</span></a>
+      <a class="active" href="#" onclick="return false;">Live Dashboard <span class="tag">Live</span></a>
+      <a href="#" onclick="return false;">Activity Trends <span class="tag">AI</span></a>
+      <a href="#" onclick="return false;">Market Signals <span class="tag">Signals</span></a>
+      <a href="#" onclick="return false;">Data Model <span class="tag">Hybrid</span></a>
       <a href="#" onclick="return false;">Privacy & Ethics <span class="tag">Safe</span></a>
     </nav>
 
-    <div style="margin-top:14px" class="pill"><span class="dot"></span> تحديثات لحظية (محاكاة)</div>
-    <div style="margin-top:10px" class="sub">
-      * لعرض الخريطة يلزم اتصال إنترنت (OpenStreetMap tiles)
+    <div class="pill"><span class="dot"></span> Live simulated updates</div>
+
+    <div class="side-note">
+      This dashboard demonstrates how GigScope can transform non-traditional signals into
+      real-time economic intelligence while preserving privacy.
     </div>
   </aside>
 
   <main class="main">
+    <section class="strategic-header">
+      <h2>📡 What Decision-Makers Can See Now</h2>
+      <p>
+        GigScope transforms invisible workforce activity into real-time economic intelligence by combining
+        mobility signals, demand indicators, aggregated platform activity, and AI-based estimation models.
+      </p>
+
+      <div class="decision-strip">
+        <div class="decision-chip">👥 Hidden Workforce Size</div>
+        <div class="decision-chip">📍 Peak Activity Zones</div>
+        <div class="decision-chip">📊 Official vs Observed Activity Gap</div>
+        <div class="decision-chip">🧠 AI-Estimated Workforce Patterns</div>
+      </div>
+    </section>
+
     <div class="topbar">
       <div class="title">
-        <h2>GigScope — لوحة مرئية احترافية (خريطة تفاعلية + Heatmap + حركة مركبات)</h2>
-        <p>واجهة Mockup لعرض مؤشرات تقديرية لحجم العاملين في اقتصاد المنصات باستخدام بيانات مجمّعة ومحاكاة لحظية.</p>
+        <h3>GigScope Live Intelligence Dashboard</h3>
+        <p>AI-powered simulation interface for visualizing hidden workforce signals across urban areas.</p>
       </div>
 
       <div class="controls">
-        <select id="citySelect" title="اختيار المدينة">
-          <option value="riyadh" selected>الرياض</option>
-          <option value="jeddah">جدة</option>
-          <option value="dammam">الدمام</option>
+        <select id="citySelect" title="Select city">
+          <option value="riyadh" selected>Riyadh</option>
+          <option value="jeddah">Jeddah</option>
+          <option value="dammam">Dammam</option>
         </select>
-        <select id="speedSelect" title="سرعة الحركة">
-          <option value="700">سرعة عادية</option>
-          <option value="400">سريعة</option>
-          <option value="1000" selected>هادئة</option>
+
+        <select id="speedSelect" title="Animation speed">
+          <option value="700">Normal speed</option>
+          <option value="400">Fast</option>
+          <option value="1000" selected>Calm</option>
         </select>
-        <button id="pauseBtn">إيقاف التحديث</button>
+
+        <button id="pauseBtn">Pause updates</button>
       </div>
     </div>
 
     <section class="grid">
-      <!-- KPI cards -->
       <div class="card span-3">
-        <h3>Estimated Gig Workers</h3>
+        <h4>Estimated Active Gig Workforce</h4>
         <div class="kpi">
           <div>
             <div class="value" id="kpiEstimated">2,900</div>
-            <div class="sub">مبني على مؤشرات رقمية مجمّعة</div>
+            <div class="sub">Derived from aggregated digital and mobility signals</div>
           </div>
           <div class="delta" id="kpiDelta">+6.8%</div>
         </div>
       </div>
 
       <div class="card span-3">
-        <h3>Official vs Observed</h3>
+        <h4>Official Records vs Observed Activity</h4>
         <div class="kpi">
           <div>
-            <div class="value"><span id="kpiOfficial">1,800</span> <span style="color:var(--muted);font-size:14px">vs</span> <span id="kpiObserved">2,900</span></div>
-            <div class="sub">مقارنة تقديرية مع رقم رسمي افتراضي</div>
+            <div class="value">
+              <span id="kpiOfficial">1,800</span>
+              <span style="font-size:14px;color:var(--muted)">vs</span>
+              <span id="kpiObserved">2,900</span>
+            </div>
+            <div class="sub">Comparison between formal records and AI-estimated activity</div>
           </div>
         </div>
       </div>
 
       <div class="card span-3">
-        <h3>Data Gap (%)</h3>
+        <h4>Hidden Workforce Gap</h4>
         <div class="kpi">
           <div>
             <div class="value" id="kpiGap">+61%</div>
-            <div class="sub">الفجوة بين المرصود والرسمي</div>
+            <div class="sub">Estimated difference between observed and officially visible labor</div>
           </div>
         </div>
       </div>
 
       <div class="card span-3">
-        <h3>Peak Activity Time</h3>
+        <h4>Peak Economic Activity Window</h4>
         <div class="kpi">
           <div>
             <div class="value" id="kpiPeak">6–9 PM</div>
-            <div class="sub">أعلى كثافة نشاط/توقف</div>
+            <div class="sub">Highest density of movement and service demand</div>
           </div>
         </div>
       </div>
 
-      <!-- Map -->
       <div class="card span-8 mapWrap">
-        <div id="map" aria-label="خريطة تفاعلية OpenStreetMap"></div>
+        <div class="map-overlay-label">Live Economic Activity Map (AI Estimated)</div>
+        <div id="map" aria-label="Interactive OpenStreetMap view"></div>
       </div>
 
-      <!-- Charts -->
       <div class="card span-4">
-        <h3>Delivery Vehicles Activity</h3>
+        <h4>Mobility Signal Activity</h4>
         <canvas id="lineVehicles" height="190"></canvas>
       </div>
 
       <div class="card span-4">
-        <h3>Official vs Observed Workers</h3>
+        <h4>Official vs Observed Workforce</h4>
         <canvas id="barCompare" height="190"></canvas>
       </div>
 
       <div class="card span-4">
-        <h3>Search Trend Index (Google Trends)</h3>
+        <h4>Demand Signal Trend Index</h4>
         <canvas id="lineTrends" height="190"></canvas>
       </div>
 
-      <!-- Privacy -->
+      <div class="card span-6">
+        <h4>🧠 Smart Hybrid Data Collection Model</h4>
+        <p class="section-text">
+          GigScope uses a multi-layered estimation approach that does not depend on individual tracking.
+          Instead, it combines real-world signals that indicate economic activity intensity.
+        </p>
+        <ul class="feature-list">
+          <li>📍 Mobility signals from high-density zones such as delivery clustering points</li>
+          <li>🔍 Search demand indicators reflecting service need over time</li>
+          <li>📱 Aggregated platform activity indicators from non-personal usage patterns</li>
+          <li>🧠 AI-based estimation models that convert signals into workforce visibility</li>
+          <li>🔒 No personal data collection, no identities, and no direct worker tracking</li>
+        </ul>
+      </div>
+
+      <div class="card span-6">
+        <h4>💡 Real-World Impact</h4>
+        <p class="section-text">
+          GigScope helps governments, urban planners, and labor analysts understand hidden economic activity
+          with more clarity, enabling smarter and fairer decisions.
+        </p>
+
+        <div class="impact-grid">
+          <div class="impact-box">
+            <strong>Government Planning</strong>
+            Better visibility into workforce size for strategic policy design.
+          </div>
+          <div class="impact-box">
+            <strong>Urban Demand Prediction</strong>
+            Detect pressure zones and peak service windows across cities.
+          </div>
+          <div class="impact-box">
+            <strong>Labor Market Transparency</strong>
+            Reveal hidden participation beyond formal registration systems.
+          </div>
+        </div>
+      </div>
+
       <div class="card span-12">
-        <h3>Privacy & Data Ethics</h3>
+        <h4>Privacy & Data Ethics</h4>
         <div class="privacy">
           <div class="shield">🛡️</div>
           <div>
             <p>
-              تُستخدم البيانات في هذا النموذج **لأغراض الدراسة وإثبات الفكرة فقط**.
-              يعتمد GigScope على **مؤشرات مجمّعة/مجهولة** (Aggregated & Anonymized) وبيانات عامة،
-              دون جمع أي معلومات شخصية أو مُعرِّفات للأفراد.
+              This dashboard is designed to demonstrate the GigScope concept using aggregated and anonymized
+              indicators only. The model focuses on patterns, zones, and time windows rather than individuals.
             </p>
             <ul>
-              <li>لا يتم جمع أسماء/أرقام/هويات/لوحات مركبات/معرّفات أجهزة.</li>
-              <li>المخرجات تعرض مؤشرات تقديرية على مستوى المنطقة والزمن.</li>
-              <li>يمكن لاحقًا ربط المرصد بواجهات API أو تدفق IoT مع تطبيق ضوابط الخصوصية.</li>
+              <li>No names, phone numbers, IDs, plate numbers, or device identifiers are collected.</li>
+              <li>Outputs are displayed as regional and temporal estimations only.</li>
+              <li>The system is designed around privacy-safe, non-personal economic intelligence.</li>
             </ul>
-            <div class="footnote">* Demo: حركة المركبات وHeatmap محاكاة للتوضيح (ليست تتبعًا فعليًا للأفراد).</div>
+            <div class="footnote">
+              * Simulation note: moving signals and heatmap intensity are visual demo elements for concept presentation.
+            </div>
           </div>
         </div>
       </div>
@@ -353,93 +681,140 @@
 </div>
 
 <script>
-  // -------------------- Demo data --------------------
   const months6 = ["Jan","Feb","Mar","Apr","May","Jun"];
   let vehicles = [120,145,170,195,210,235];
-  let trends   = [60,68,75,82,88,92];
-  let zones = ["City Center","Mall Area","Restaurant Zone"];
-  let officialByZone  = [180,180,180];
-  let observedByZone  = [290,240,320];
+  let trends = [60,68,75,82,88,92];
+  let zones = ["City Center","Mall District","Restaurant Zone"];
+  let officialByZone = [180,180,180];
+  let observedByZone = [290,240,320];
 
   const fmt = (n)=> n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const clamp = (v, a, b)=> Math.max(a, Math.min(b, v));
 
-  // -------------------- Charts (Google-analytics-ish clean) --------------------
-  Chart.defaults.color = "rgba(232,238,252,.85)";
+  Chart.defaults.color = "rgba(232,238,252,.88)";
   Chart.defaults.font.family = "Cairo, system-ui, -apple-system, Segoe UI, Arial";
   Chart.defaults.borderColor = "rgba(255,255,255,.08)";
 
-  const lineVehicles = new Chart(document.getElementById("lineVehicles"),{
+  const lineVehicles = new Chart(document.getElementById("lineVehicles"), {
     type:"line",
-    data:{ labels: months6, datasets:[{ label:"Vehicles", data: vehicles, tension:.35, borderWidth:2, pointRadius:3 }] },
-    options:{ plugins:{legend:{display:false}}, scales:{ x:{grid:{display:false}}, y:{grid:{color:"rgba(255,255,255,.06)"}} } }
+    data:{
+      labels:months6,
+      datasets:[{
+        label:"Mobility Signals",
+        data:vehicles,
+        tension:.35,
+        borderWidth:2,
+        pointRadius:3
+      }]
+    },
+    options:{
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false}},
+        y:{grid:{color:"rgba(255,255,255,.06)"}}
+      }
+    }
   });
 
-  const lineTrends = new Chart(document.getElementById("lineTrends"),{
+  const lineTrends = new Chart(document.getElementById("lineTrends"), {
     type:"line",
-    data:{ labels: months6, datasets:[{ label:"Trend Index", data: trends, tension:.35, borderWidth:2, pointRadius:3 }] },
-    options:{ plugins:{legend:{display:false}}, scales:{ x:{grid:{display:false}}, y:{grid:{color:"rgba(255,255,255,.06)"}, suggestedMin:40, suggestedMax:100} } }
+    data:{
+      labels:months6,
+      datasets:[{
+        label:"Demand Trend",
+        data:trends,
+        tension:.35,
+        borderWidth:2,
+        pointRadius:3
+      }]
+    },
+    options:{
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false}},
+        y:{
+          grid:{color:"rgba(255,255,255,.06)"},
+          suggestedMin:40,
+          suggestedMax:100
+        }
+      }
+    }
   });
 
-  const barCompare = new Chart(document.getElementById("barCompare"),{
+  const barCompare = new Chart(document.getElementById("barCompare"), {
     type:"bar",
-    data:{ labels: zones, datasets:[ {label:"Official", data: officialByZone, borderWidth:1}, {label:"Observed", data: observedByZone, borderWidth:1} ] },
-    options:{ plugins:{legend:{position:"top"}}, scales:{ x:{grid:{display:false}}, y:{grid:{color:"rgba(255,255,255,.06)"}} } }
+    data:{
+      labels:zones,
+      datasets:[
+        {label:"Official", data:officialByZone, borderWidth:1},
+        {label:"Observed", data:observedByZone, borderWidth:1}
+      ]
+    },
+    options:{
+      plugins:{legend:{position:"top"}},
+      scales:{
+        x:{grid:{display:false}},
+        y:{grid:{color:"rgba(255,255,255,.06)"}}
+      }
+    }
   });
 
-  // -------------------- KPIs --------------------
   function computeEstimatedWorkers(){
-    const v = vehicles[vehicles.length-1];
-    const t = trends[trends.length-1];
-    return Math.round((v * 9) + (t * 12)); // demo formula
+    const v = vehicles[vehicles.length - 1];
+    const t = trends[trends.length - 1];
+    return Math.round((v * 9) + (t * 12));
   }
+
   function computeDelta(){
-    const lastV = vehicles[vehicles.length-1], prevV = vehicles[vehicles.length-2] ?? lastV;
-    const lastT = trends[trends.length-1],   prevT = trends[trends.length-2] ?? lastT;
-    const last = (lastV*9)+(lastT*12);
-    const prev = (prevV*9)+(prevT*12);
+    const lastV = vehicles[vehicles.length - 1];
+    const prevV = vehicles[vehicles.length - 2] ?? lastV;
+    const lastT = trends[trends.length - 1];
+    const prevT = trends[trends.length - 2] ?? lastT;
+
+    const last = (lastV * 9) + (lastT * 12);
+    const prev = (prevV * 9) + (prevT * 12);
     const pct = prev === 0 ? 0 : ((last - prev) / prev) * 100;
     return pct;
   }
+
   function refreshKPIs(){
     const estimated = computeEstimatedWorkers();
     const official = 1800;
     const gap = Math.round(((estimated - official) / official) * 100);
 
     document.getElementById("kpiEstimated").textContent = fmt(estimated);
-    document.getElementById("kpiOfficial").textContent  = fmt(official);
-    document.getElementById("kpiObserved").textContent  = fmt(estimated);
-    document.getElementById("kpiGap").textContent       = (gap>=0?"+":"") + gap + "%";
+    document.getElementById("kpiOfficial").textContent = fmt(official);
+    document.getElementById("kpiObserved").textContent = fmt(estimated);
+    document.getElementById("kpiGap").textContent = (gap >= 0 ? "+" : "") + gap + "%";
 
     const d = computeDelta();
     const el = document.getElementById("kpiDelta");
-    el.textContent = (d>=0?"+":"") + d.toFixed(1) + "%";
+    el.textContent = (d >= 0 ? "+" : "") + d.toFixed(1) + "%";
     el.classList.toggle("bad", d < 0);
   }
+
   refreshKPIs();
 
-  // -------------------- Map (OpenStreetMap via Leaflet) --------------------
-  // City centers (approx)
   const cityCenters = {
-    riyadh:  { name:"الرياض",  center:[24.7136, 46.6753], zoom: 11 },
-    jeddah:  { name:"جدة",     center:[21.4858, 39.1925], zoom: 11 },
-    dammam:  { name:"الدمام",  center:[26.4207, 50.0888], zoom: 11 }
+    riyadh: { name:"Riyadh", center:[24.7136, 46.6753], zoom:11 },
+    jeddah: { name:"Jeddah", center:[21.4858, 39.1925], zoom:11 },
+    dammam: { name:"Dammam", center:[26.4207, 50.0888], zoom:11 }
   };
 
   const map = L.map('map', { zoomControl:true });
-  const tile = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap contributors'
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:19,
+    attribution:'&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  // Add subtle dark overlay using a pane
   map.createPane('darkPane');
   map.getPane('darkPane').style.zIndex = 250;
-  const darkRect = L.rectangle([[-90,-180],[90,180]], {
+  L.rectangle([[-90,-180],[90,180]], {
     pane:'darkPane',
     color:'transparent',
-    fillColor:'#0b1220',
-    fillOpacity:0.20,
+    fillColor:'#07111f',
+    fillOpacity:0.18,
     interactive:false
   }).addTo(map);
 
@@ -447,37 +822,36 @@
     const c = cityCenters[key];
     map.setView(c.center, c.zoom);
   }
+
   setCity('riyadh');
 
-  // Vehicle icon
   const vehicleIcon = L.divIcon({
-    className: 'vehicle-icon',
-    html: `<div style="
-      width:14px;height:14px;border-radius:999px;
-      background:rgba(96,165,250,.95);
-      box-shadow:0 0 18px rgba(96,165,250,.65);
-      border:1px solid rgba(255,255,255,.45);
+    className:'vehicle-icon',
+    html:`<div style="
+      width:14px;
+      height:14px;
+      border-radius:999px;
+      background:rgba(96,165,250,.96);
+      box-shadow:0 0 18px rgba(96,165,250,.7);
+      border:1px solid rgba(255,255,255,.55);
     "></div>`
   });
 
-  // Create simulated vehicles around center
   function randomAround([lat,lng], kmRadius){
-    // Very rough conversion: 1 deg lat ~ 111km
     const r = kmRadius / 111;
-    const u = Math.random()*2 - 1;
-    const v = Math.random()*2 - 1;
-    return [lat + u*r, lng + v*r*Math.cos(lat*Math.PI/180)];
+    const u = Math.random() * 2 - 1;
+    const v = Math.random() * 2 - 1;
+    return [lat + u * r, lng + v * r * Math.cos(lat * Math.PI / 180)];
   }
 
   let currentCityKey = 'riyadh';
-  let vehiclesN = 18; // number of moving markers
+  let vehiclesN = 18;
   let vehicleMarkers = [];
   let vehicleTargets = [];
-  let heatPoints = []; // [lat,lng,intensity]
+  let heatPoints = [];
   let heatLayer = null;
 
   function initVehicles(){
-    // clear
     vehicleMarkers.forEach(m => map.removeLayer(m));
     vehicleMarkers = [];
     vehicleTargets = [];
@@ -485,65 +859,76 @@
 
     const center = cityCenters[currentCityKey].center;
 
-    for(let i=0;i<vehiclesN;i++){
+    for(let i = 0; i < vehiclesN; i++){
       const pos = randomAround(center, 8);
-      const marker = L.marker(pos, { icon: vehicleIcon }).addTo(map);
-      marker.bindTooltip(`مركبة توصيل #${i+1}`, {direction:'top', offset:[0,-6]});
+      const marker = L.marker(pos, { icon:vehicleIcon }).addTo(map);
+      marker.bindTooltip(`Signal #${i + 1}`, {direction:'top', offset:[0, -6]});
       vehicleMarkers.push(marker);
       vehicleTargets.push(randomAround(center, 8));
     }
 
-    // Heat points (simulate hotspots)
-    for(let j=0;j<55;j++){
+    for(let j = 0; j < 55; j++){
       const p = randomAround(center, 10);
-      const intensity = Math.random()*0.8 + 0.2; // 0.2 - 1.0
+      const intensity = Math.random() * 0.8 + 0.2;
       heatPoints.push([p[0], p[1], intensity]);
     }
 
     if(heatLayer) map.removeLayer(heatLayer);
-    heatLayer = L.heatLayer(heatPoints, { radius: 28, blur: 22, maxZoom: 13 }).addTo(map);
+    heatLayer = L.heatLayer(heatPoints, {
+      radius:28,
+      blur:22,
+      maxZoom:13
+    }).addTo(map);
   }
+
   initVehicles();
 
-  // Animate vehicles toward targets
-  function stepVehicle(marker, target, step=0.0025){
+  function stepVehicle(marker, target, step = 0.0025){
     const p = marker.getLatLng();
     const dLat = target[0] - p.lat;
     const dLng = target[1] - p.lng;
-    const dist = Math.sqrt(dLat*dLat + dLng*dLng);
+    const dist = Math.sqrt(dLat * dLat + dLng * dLng);
+
     if(dist < step){
       marker.setLatLng(target);
-      return true; // reached
+      return true;
     }
-    marker.setLatLng([p.lat + (dLat/dist)*step, p.lng + (dLng/dist)*step]);
+
+    marker.setLatLng([
+      p.lat + (dLat / dist) * step,
+      p.lng + (dLng / dist) * step
+    ]);
+
     return false;
   }
 
-  // Refresh heatmap slightly (simulate live demand)
   function jitterHeat(){
     const center = cityCenters[currentCityKey].center;
-    for(let i=0;i<heatPoints.length;i++){
-      // small drift & intensity change
-      heatPoints[i][0] += (Math.random()-0.5)*0.0010;
-      heatPoints[i][1] += (Math.random()-0.5)*0.0010;
-      heatPoints[i][2] = clamp(heatPoints[i][2] + (Math.random()-0.5)*0.12, 0.1, 1.0);
 
-      // keep points around the city (soft clamp)
-      heatPoints[i][0] = clamp(heatPoints[i][0], center[0]-0.25, center[0]+0.25);
-      heatPoints[i][1] = clamp(heatPoints[i][1], center[1]-0.35, center[1]+0.35);
+    for(let i = 0; i < heatPoints.length; i++){
+      heatPoints[i][0] += (Math.random() - 0.5) * 0.0010;
+      heatPoints[i][1] += (Math.random() - 0.5) * 0.0010;
+      heatPoints[i][2] = clamp(heatPoints[i][2] + (Math.random() - 0.5) * 0.12, 0.1, 1.0);
+
+      heatPoints[i][0] = clamp(heatPoints[i][0], center[0] - 0.25, center[0] + 0.25);
+      heatPoints[i][1] = clamp(heatPoints[i][1], center[1] - 0.35, center[1] + 0.35);
     }
+
     heatLayer.setLatLngs(heatPoints);
   }
 
-  // Update charts periodically (demo)
   function pushNewMonthPoint(){
-    const lastV = vehicles[vehicles.length-1];
-    const lastT = trends[trends.length-1];
-    const newV = clamp(lastV + Math.round((Math.random()*20)+5), 80, 400);
-    const newT = clamp(lastT + Math.round((Math.random()*4)+1), 45, 100);
+    const lastV = vehicles[vehicles.length - 1];
+    const lastT = trends[trends.length - 1];
 
-    vehicles.push(newV); vehicles.shift();
-    trends.push(newT); trends.shift();
+    const newV = clamp(lastV + Math.round((Math.random() * 20) + 5), 80, 400);
+    const newT = clamp(lastT + Math.round((Math.random() * 4) + 1), 45, 100);
+
+    vehicles.push(newV);
+    vehicles.shift();
+
+    trends.push(newT);
+    trends.shift();
 
     lineVehicles.data.datasets[0].data = vehicles;
     lineTrends.data.datasets[0].data = trends;
@@ -553,30 +938,32 @@
     refreshKPIs();
   }
 
-  // Update observed bars based on current heat intensity & vehicles
   function updateObservedBars(){
-    // Aggregate intensity into 3 zones just for display
     const center = cityCenters[currentCityKey].center;
-    let z1=0,z2=0,z3=0;
+    let z1 = 0, z2 = 0, z3 = 0;
+
     for(const hp of heatPoints){
-      const dLat = hp[0]-center[0], dLng = hp[1]-center[1];
-      const d = Math.sqrt(dLat*dLat + dLng*dLng);
+      const dLat = hp[0] - center[0];
+      const dLng = hp[1] - center[1];
+      const d = Math.sqrt(dLat * dLat + dLng * dLng);
+
       if(d < 0.06) z1 += hp[2];
       else if(d < 0.11) z2 += hp[2];
       else z3 += hp[2];
     }
+
     observedByZone = [
-      Math.round(180 + z1*60),
-      Math.round(160 + z2*55),
-      Math.round(170 + z3*50)
+      Math.round(180 + z1 * 60),
+      Math.round(160 + z2 * 55),
+      Math.round(170 + z3 * 50)
     ];
+
     barCompare.data.datasets[1].data = observedByZone;
     barCompare.update();
   }
 
-  // -------------------- Live loop --------------------
   let running = true;
-  let speedMs = 1000;   // heat/vehicle tick
+  let speedMs = 1000;
   let moveTick = null;
   let analyticsTick = null;
 
@@ -584,50 +971,51 @@
     if(moveTick) clearInterval(moveTick);
     if(analyticsTick) clearInterval(analyticsTick);
 
-    moveTick = setInterval(()=>{
+    moveTick = setInterval(() => {
       if(!running) return;
 
       const center = cityCenters[currentCityKey].center;
 
-      // Move each vehicle
-      for(let i=0;i<vehicleMarkers.length;i++){
+      for(let i = 0; i < vehicleMarkers.length; i++){
         const reached = stepVehicle(vehicleMarkers[i], vehicleTargets[i], 0.0020);
         if(reached){
           vehicleTargets[i] = randomAround(center, 8);
         }
       }
 
-      // Heatmap drift
       jitterHeat();
       updateObservedBars();
     }, speedMs);
 
-    // Simulate "new month" point every ~7s (for demo)
-    analyticsTick = setInterval(()=>{
+    analyticsTick = setInterval(() => {
       if(!running) return;
       pushNewMonthPoint();
     }, 7000);
   }
+
   startLoop();
 
-  // -------------------- Controls --------------------
-  document.getElementById("pauseBtn").addEventListener("click", ()=>{
+  document.getElementById("pauseBtn").addEventListener("click", () => {
     running = !running;
-    document.getElementById("pauseBtn").textContent = running ? "إيقاف التحديث" : "تشغيل التحديث";
+    document.getElementById("pauseBtn").textContent = running ? "Pause updates" : "Resume updates";
   });
 
-  document.getElementById("speedSelect").addEventListener("change", (e)=>{
+  document.getElementById("speedSelect").addEventListener("change", (e) => {
     speedMs = parseInt(e.target.value, 10);
     startLoop();
   });
 
-  document.getElementById("citySelect").addEventListener("change", (e)=>{
+  document.getElementById("citySelect").addEventListener("change", (e) => {
     currentCityKey = e.target.value;
     setCity(currentCityKey);
     initVehicles();
     refreshKPIs();
 
-    const peak = (currentCityKey==="riyadh") ? "6–9 PM" : (currentCityKey==="jeddah") ? "7–10 PM" : "5–8 PM";
+    const peak =
+      currentCityKey === "riyadh" ? "6–9 PM" :
+      currentCityKey === "jeddah" ? "7–10 PM" :
+      "5–8 PM";
+
     document.getElementById("kpiPeak").textContent = peak;
   });
 </script>
