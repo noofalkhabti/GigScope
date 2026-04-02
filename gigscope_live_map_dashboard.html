@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GigScope — AI Economic Observatory</title>
+  <title>SignalX — AI Economic Observatory</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
   <link
     rel="stylesheet"
@@ -26,38 +26,43 @@
 
   <style>
     :root{
-      --bg:#07111f;
+      --bg:#060d19;
+      --bg2:#091224;
       --panel:#0d1728;
       --panel2:#101c31;
       --glass:rgba(255,255,255,.05);
       --text:#edf4ff;
-      --muted:#97a9c9;
+      --muted:#9bb0d4;
       --border:rgba(255,255,255,.08);
-      --shadow:0 20px 50px rgba(0,0,0,.35);
-      --radius:20px;
+      --shadow:0 20px 50px rgba(0,0,0,.38);
+      --radius:22px;
       --accent1:#60a5fa;
       --accent2:#2dd4bf;
       --accent3:#22c55e;
+      --accent4:#a78bfa;
       --danger:#ef4444;
       --warning:#f59e0b;
     }
 
     *{box-sizing:border-box}
 
+    html{scroll-behavior:smooth}
+
     body{
       margin:0;
       font-family:"Cairo",system-ui,-apple-system,Segoe UI,Arial,sans-serif;
       color:var(--text);
       background:
-        radial-gradient(900px 500px at 80% 10%, rgba(45,212,191,.14), transparent 60%),
-        radial-gradient(1000px 700px at 10% 80%, rgba(96,165,250,.12), transparent 60%),
-        linear-gradient(180deg,#07111f 0%, #08101d 100%);
+        radial-gradient(1000px 600px at 85% 10%, rgba(45,212,191,.15), transparent 60%),
+        radial-gradient(900px 600px at 10% 80%, rgba(96,165,250,.12), transparent 60%),
+        radial-gradient(600px 400px at 50% 0%, rgba(167,139,250,.08), transparent 55%),
+        linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
       min-height:100vh;
     }
 
     .app{
       display:grid;
-      grid-template-columns:290px 1fr;
+      grid-template-columns:300px 1fr;
       min-height:100vh;
     }
 
@@ -68,7 +73,8 @@
       padding:18px 16px;
       background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025));
       border-right:1px solid var(--border);
-      backdrop-filter:blur(12px);
+      backdrop-filter:blur(14px);
+      overflow:auto;
     }
 
     .brand{
@@ -81,26 +87,41 @@
     }
 
     .logo{
-      width:48px;
-      height:48px;
-      border-radius:16px;
+      width:54px;
+      height:54px;
+      border-radius:18px;
       display:grid;
       place-items:center;
       font-size:22px;
       font-weight:900;
-      background:linear-gradient(135deg,var(--accent1),var(--accent2));
-      box-shadow:0 0 35px rgba(96,165,250,.25);
+      letter-spacing:.4px;
+      background:
+        linear-gradient(135deg, rgba(96,165,250,1), rgba(45,212,191,1));
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.12) inset,
+        0 0 26px rgba(96,165,250,.25),
+        0 0 40px rgba(45,212,191,.18);
       color:white;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .logo::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(135deg, rgba(255,255,255,.18), transparent 40%, transparent 60%, rgba(255,255,255,.08));
+      pointer-events:none;
     }
 
     .brand h1{
       margin:0;
-      font-size:18px;
-      line-height:1.1;
+      font-size:20px;
+      line-height:1.05;
     }
 
     .brand p{
-      margin:0;
+      margin:2px 0 0;
       color:var(--muted);
       font-size:12px;
     }
@@ -116,7 +137,7 @@
       text-decoration:none;
       color:var(--muted);
       padding:12px 14px;
-      border-radius:14px;
+      border-radius:15px;
       border:1px solid transparent;
       display:flex;
       justify-content:space-between;
@@ -128,7 +149,7 @@
     .nav a:hover,
     .nav a.active{
       color:var(--text);
-      border-color:rgba(45,212,191,.22);
+      border-color:rgba(45,212,191,.24);
       background:rgba(45,212,191,.08);
     }
 
@@ -159,56 +180,139 @@
       height:8px;
       border-radius:999px;
       background:var(--accent3);
-      box-shadow:0 0 10px var(--accent3);
+      box-shadow:0 0 12px var(--accent3);
+      animation:pulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulse{
+      0%,100%{transform:scale(1);opacity:1}
+      50%{transform:scale(1.4);opacity:.65}
     }
 
     .side-note{
       margin-top:12px;
       color:var(--muted);
       font-size:12px;
-      line-height:1.7;
+      line-height:1.8;
+    }
+
+    .side .mini-card{
+      margin-top:16px;
+      padding:14px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025));
+      border:1px solid var(--border);
+    }
+
+    .mini-card h4{
+      margin:0 0 8px;
+      font-size:14px;
+    }
+
+    .mini-card p{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.8;
     }
 
     .main{
       padding:18px 18px 42px;
     }
 
-    .strategic-header{
-      background:linear-gradient(90deg, rgba(15,23,42,.9), rgba(30,41,59,.95));
+    .hero{
+      position:relative;
+      background:
+        linear-gradient(135deg, rgba(15,23,42,.94), rgba(30,41,59,.92)),
+        radial-gradient(circle at 80% 20%, rgba(45,212,191,.16), transparent 45%);
       border:1px solid rgba(255,255,255,.08);
-      border-radius:20px;
-      padding:22px;
+      border-radius:26px;
+      padding:26px;
       margin-bottom:16px;
       box-shadow:var(--shadow);
-      position:relative;
       overflow:hidden;
     }
 
-    .strategic-header::after{
+    .hero::before{
       content:"";
       position:absolute;
-      inset:auto -100px -100px auto;
-      width:260px;
-      height:260px;
-      background:radial-gradient(circle, rgba(45,212,191,.16), transparent 65%);
+      width:340px;
+      height:340px;
+      right:-80px;
+      top:-80px;
+      background:radial-gradient(circle, rgba(96,165,250,.18), transparent 65%);
       pointer-events:none;
     }
 
-    .strategic-header h2{
-      margin:0 0 8px;
-      font-size:28px;
+    .hero::after{
+      content:"";
+      position:absolute;
+      width:280px;
+      height:280px;
+      left:-90px;
+      bottom:-100px;
+      background:radial-gradient(circle, rgba(167,139,250,.12), transparent 65%);
+      pointer-events:none;
     }
 
-    .strategic-header p{
+    .hero-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .hero h2{
+      margin:0 0 10px;
+      font-size:32px;
+      line-height:1.1;
+    }
+
+    .hero p{
       margin:0;
-      color:#d7e5ff;
+      color:#dce8ff;
       font-size:15px;
-      max-width:850px;
-      line-height:1.8;
+      max-width:880px;
+      line-height:1.9;
+    }
+
+    .hero-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .hero-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      text-decoration:none;
+      color:white;
+      padding:12px 16px;
+      border-radius:14px;
+      font-size:14px;
+      font-weight:700;
+      border:1px solid rgba(255,255,255,.10);
+      transition:.2s ease;
+      backdrop-filter:blur(8px);
+    }
+
+    .hero-btn.primary{
+      background:linear-gradient(135deg, rgba(96,165,250,.22), rgba(45,212,191,.20));
+    }
+
+    .hero-btn.secondary{
+      background:rgba(255,255,255,.05);
+    }
+
+    .hero-btn:hover{
+      transform:translateY(-1px);
+      border-color:rgba(255,255,255,.18);
     }
 
     .decision-strip{
-      margin-top:16px;
+      margin-top:18px;
       display:flex;
       flex-wrap:wrap;
       gap:10px;
@@ -288,11 +392,11 @@
     .card::before{
       content:"";
       position:absolute;
-      top:-40px;
-      right:-40px;
-      width:120px;
-      height:120px;
-      background:radial-gradient(circle, rgba(96,165,250,.10), transparent 65%);
+      top:-42px;
+      right:-42px;
+      width:130px;
+      height:130px;
+      background:radial-gradient(circle, rgba(96,165,250,.11), transparent 65%);
       pointer-events:none;
     }
 
@@ -351,12 +455,12 @@
 
     .mapWrap{
       padding:0;
-      height:450px;
+      height:460px;
     }
 
     #map{
       width:100%;
-      height:450px;
+      height:460px;
       border-radius:var(--radius);
       overflow:hidden;
     }
@@ -384,10 +488,30 @@
       box-shadow:0 8px 25px rgba(0,0,0,.25);
     }
 
+    .map-overlay-stats{
+      position:absolute;
+      right:14px;
+      top:14px;
+      z-index:500;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .map-pill{
+      background:rgba(8,15,30,.72);
+      border:1px solid rgba(255,255,255,.08);
+      color:#eaf2ff;
+      padding:9px 12px;
+      border-radius:12px;
+      font-size:12px;
+      backdrop-filter:blur(8px);
+    }
+
     .section-text{
       color:var(--muted);
       font-size:13px;
-      line-height:1.8;
+      line-height:1.85;
       margin:0;
     }
 
@@ -396,7 +520,7 @@
       padding-left:18px;
       color:var(--muted);
       font-size:13px;
-      line-height:1.9;
+      line-height:1.95;
     }
 
     .impact-grid{
@@ -443,7 +567,7 @@
       margin:0;
       color:var(--muted);
       font-size:13px;
-      line-height:1.8;
+      line-height:1.85;
     }
 
     .privacy ul{
@@ -451,7 +575,7 @@
       padding-left:18px;
       color:var(--muted);
       font-size:13px;
-      line-height:1.8;
+      line-height:1.9;
     }
 
     .footnote{
@@ -460,28 +584,58 @@
       font-size:12px;
     }
 
+    .sdg-grid{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:12px;
+      margin-top:10px;
+    }
+
+    .sdg-card{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+    }
+
+    .sdg-card .num{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:34px;
+      height:34px;
+      border-radius:12px;
+      font-size:13px;
+      font-weight:900;
+      margin-bottom:10px;
+      color:white;
+      background:linear-gradient(135deg, rgba(96,165,250,.8), rgba(167,139,250,.8));
+    }
+
+    .sdg-card h5{
+      margin:0 0 6px;
+      font-size:14px;
+    }
+
+    .sdg-card p{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.8;
+    }
+
     @media (max-width:1080px){
-      .app{
-        grid-template-columns:1fr;
-      }
+      .app{grid-template-columns:1fr}
       .side{
         position:relative;
         height:auto;
         border-right:none;
         border-bottom:1px solid var(--border);
       }
-      .span-3,.span-4,.span-5,.span-6,.span-7,.span-8{
-        grid-column:span 12;
-      }
-      .impact-grid{
-        grid-template-columns:1fr;
-      }
-      .mapWrap,#map{
-        height:340px;
-      }
-      .strategic-header h2{
-        font-size:24px;
-      }
+      .span-3,.span-4,.span-5,.span-6,.span-7,.span-8{grid-column:span 12}
+      .impact-grid,.sdg-grid{grid-template-columns:1fr}
+      .mapWrap,#map{height:340px}
+      .hero h2{font-size:26px}
     }
   </style>
 </head>
@@ -490,10 +644,10 @@
 <div class="app">
   <aside class="side">
     <div class="brand">
-      <div class="logo">G</div>
+      <div class="logo">SX</div>
       <div>
-        <h1>GigScope</h1>
-        <p>AI-Powered Economic Observatory</p>
+        <h1>SignalX</h1>
+        <p>AI Economic Observatory</p>
       </div>
     </div>
 
@@ -508,31 +662,49 @@
     <div class="pill"><span class="dot"></span> Live simulated updates</div>
 
     <div class="side-note">
-      This dashboard demonstrates how GigScope can transform non-traditional signals into
-      real-time economic intelligence while preserving privacy.
+      SignalX reveals hidden workforce patterns using non-traditional signals,
+      privacy-safe estimation logic, and real-time visualization for decision-makers.
+    </div>
+
+    <div class="mini-card">
+      <h4>Why SignalX?</h4>
+      <p>
+        Because missing data creates blind spots. SignalX helps transform hidden activity
+        into visible intelligence for smarter labor and city decisions.
+      </p>
     </div>
   </aside>
 
   <main class="main">
-    <section class="strategic-header">
-      <h2>📡 What Decision-Makers Can See Now</h2>
-      <p>
-        GigScope transforms invisible workforce activity into real-time economic intelligence by combining
-        mobility signals, demand indicators, aggregated platform activity, and AI-based estimation models.
-      </p>
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <h2>🚀 SignalX — Making the Invisible Workforce Visible</h2>
+          <p>
+            SignalX is an AI-powered observatory that converts hidden platform-economy activity into
+            actionable economic intelligence. By combining mobility signals, demand indicators, and
+            aggregated digital patterns, it reveals workforce size, peak activity zones, and hidden market gaps.
+          </p>
+        </div>
+
+        <div class="hero-actions">
+          <a href="#" class="hero-btn primary">▶ Demo Video</a>
+          <a href="#sdgs" class="hero-btn secondary">🌍 SDGs Alignment</a>
+        </div>
+      </div>
 
       <div class="decision-strip">
         <div class="decision-chip">👥 Hidden Workforce Size</div>
         <div class="decision-chip">📍 Peak Activity Zones</div>
-        <div class="decision-chip">📊 Official vs Observed Activity Gap</div>
-        <div class="decision-chip">🧠 AI-Estimated Workforce Patterns</div>
+        <div class="decision-chip">📊 Official vs Observed Gap</div>
+        <div class="decision-chip">🧠 AI-Estimated Patterns</div>
       </div>
     </section>
 
     <div class="topbar">
       <div class="title">
-        <h3>GigScope Live Intelligence Dashboard</h3>
-        <p>AI-powered simulation interface for visualizing hidden workforce signals across urban areas.</p>
+        <h3>SignalX Live Intelligence Dashboard</h3>
+        <p>AI-powered simulation interface for visualizing hidden workforce dynamics across cities.</p>
       </div>
 
       <div class="controls">
@@ -558,7 +730,7 @@
         <div class="kpi">
           <div>
             <div class="value" id="kpiEstimated">2,900</div>
-            <div class="sub">Derived from aggregated digital and mobility signals</div>
+            <div class="sub">Derived from aggregated mobility and digital demand signals</div>
           </div>
           <div class="delta" id="kpiDelta">+6.8%</div>
         </div>
@@ -573,7 +745,7 @@
               <span style="font-size:14px;color:var(--muted)">vs</span>
               <span id="kpiObserved">2,900</span>
             </div>
-            <div class="sub">Comparison between formal records and AI-estimated activity</div>
+            <div class="sub">Formal visibility compared with AI-estimated real-world activity</div>
           </div>
         </div>
       </div>
@@ -593,13 +765,17 @@
         <div class="kpi">
           <div>
             <div class="value" id="kpiPeak">6–9 PM</div>
-            <div class="sub">Highest density of movement and service demand</div>
+            <div class="sub">Highest intensity of movement and service demand</div>
           </div>
         </div>
       </div>
 
       <div class="card span-8 mapWrap">
         <div class="map-overlay-label">Live Economic Activity Map (AI Estimated)</div>
+        <div class="map-overlay-stats">
+          <div class="map-pill">Signal Layers: Mobility + Demand + Aggregated Activity</div>
+          <div class="map-pill">Privacy Mode: No Personal Data</div>
+        </div>
         <div id="map" aria-label="Interactive OpenStreetMap view"></div>
       </div>
 
@@ -621,37 +797,64 @@
       <div class="card span-6">
         <h4>🧠 Smart Hybrid Data Collection Model</h4>
         <p class="section-text">
-          GigScope uses a multi-layered estimation approach that does not depend on individual tracking.
-          Instead, it combines real-world signals that indicate economic activity intensity.
+          SignalX uses a layered estimation approach that avoids direct worker tracking. Instead,
+          it reads non-personal signals that indicate economic activity intensity and converts them into
+          workforce visibility using AI.
         </p>
         <ul class="feature-list">
-          <li>📍 Mobility signals from high-density zones such as delivery clustering points</li>
-          <li>🔍 Search demand indicators reflecting service need over time</li>
-          <li>📱 Aggregated platform activity indicators from non-personal usage patterns</li>
-          <li>🧠 AI-based estimation models that convert signals into workforce visibility</li>
-          <li>🔒 No personal data collection, no identities, and no direct worker tracking</li>
+          <li>📍 Mobility signals from high-density delivery and service zones</li>
+          <li>🔍 Search demand indicators reflecting real service need</li>
+          <li>📱 Aggregated platform activity indicators without personal identifiers</li>
+          <li>🧠 AI estimation models to infer workforce size and concentration</li>
+          <li>🔒 Privacy-safe logic built around anonymized and aggregated inputs only</li>
         </ul>
       </div>
 
       <div class="card span-6">
         <h4>💡 Real-World Impact</h4>
         <p class="section-text">
-          GigScope helps governments, urban planners, and labor analysts understand hidden economic activity
-          with more clarity, enabling smarter and fairer decisions.
+          SignalX helps governments, planners, and labor analysts understand hidden participation in the platform economy,
+          enabling smarter labor policy, fairer planning, and more accurate economic insight.
         </p>
 
         <div class="impact-grid">
           <div class="impact-box">
             <strong>Government Planning</strong>
-            Better visibility into workforce size for strategic policy design.
+            Better workforce estimation for strategic policy and labor support design.
           </div>
           <div class="impact-box">
             <strong>Urban Demand Prediction</strong>
-            Detect pressure zones and peak service windows across cities.
+            Detect high-pressure service zones and peak time windows across cities.
           </div>
           <div class="impact-box">
-            <strong>Labor Market Transparency</strong>
-            Reveal hidden participation beyond formal registration systems.
+            <strong>Market Transparency</strong>
+            Reveal hidden workforce participation beyond formal registration systems.
+          </div>
+        </div>
+      </div>
+
+      <div class="card span-12" id="sdgs">
+        <h4>🌍 SDGs Alignment</h4>
+        <p class="section-text">
+          SignalX aligns with global development priorities by improving labor visibility, supporting data-driven
+          planning, and strengthening innovation infrastructure for fairer and smarter economies.
+        </p>
+
+        <div class="sdg-grid">
+          <div class="sdg-card">
+            <div class="num">8</div>
+            <h5>Decent Work & Economic Growth</h5>
+            <p>Improves understanding of hidden labor participation and supports better workforce inclusion.</p>
+          </div>
+          <div class="sdg-card">
+            <div class="num">9</div>
+            <h5>Industry, Innovation & Infrastructure</h5>
+            <p>Uses AI and signal intelligence to create modern, scalable economic observatories.</p>
+          </div>
+          <div class="sdg-card">
+            <div class="num">11</div>
+            <h5>Sustainable Cities & Communities</h5>
+            <p>Helps cities detect demand concentration and plan smarter service ecosystems.</p>
           </div>
         </div>
       </div>
@@ -662,13 +865,13 @@
           <div class="shield">🛡️</div>
           <div>
             <p>
-              This dashboard is designed to demonstrate the GigScope concept using aggregated and anonymized
-              indicators only. The model focuses on patterns, zones, and time windows rather than individuals.
+              This dashboard demonstrates the SignalX concept using aggregated and anonymized indicators only.
+              The model focuses on patterns, areas, and time windows rather than people or identities.
             </p>
             <ul>
-              <li>No names, phone numbers, IDs, plate numbers, or device identifiers are collected.</li>
-              <li>Outputs are displayed as regional and temporal estimations only.</li>
-              <li>The system is designed around privacy-safe, non-personal economic intelligence.</li>
+              <li>No names, phone numbers, IDs, device IDs, or plate numbers are collected.</li>
+              <li>Outputs are presented as regional and temporal estimations only.</li>
+              <li>The system is designed around privacy-safe economic intelligence.</li>
             </ul>
             <div class="footnote">
               * Simulation note: moving signals and heatmap intensity are visual demo elements for concept presentation.
@@ -773,8 +976,7 @@
 
     const last = (lastV * 9) + (lastT * 12);
     const prev = (prevV * 9) + (prevT * 12);
-    const pct = prev === 0 ? 0 : ((last - prev) / prev) * 100;
-    return pct;
+    return prev === 0 ? 0 : ((last - prev) / prev) * 100;
   }
 
   function refreshKPIs(){
@@ -832,7 +1034,7 @@
       height:14px;
       border-radius:999px;
       background:rgba(96,165,250,.96);
-      box-shadow:0 0 18px rgba(96,165,250,.7);
+      box-shadow:0 0 18px rgba(96,165,250,.75);
       border:1px solid rgba(255,255,255,.55);
     "></div>`
   });
