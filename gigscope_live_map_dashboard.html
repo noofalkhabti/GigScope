@@ -433,7 +433,7 @@
     <div class="pill"><span class="dot"></span> تحديث حي للمركبات والمؤشرات</div>
 
     <div class="mini-note">
-      الخريطة تعرض محاكاة ذكية لحركة مركبات ودبابات التوصيل مع معلومات نوع الجهة ومصدر البيانات.
+      الخريطة تعرض محاكاة ذكية لحركة مركبات ودراجات التوصيل مع معلومات نوع الجهة ومصدر البيانات.
     </div>
 
     <div class="legend">
@@ -469,7 +469,7 @@
           <option value="app">التطبيقات فقط</option>
           <option value="store">المتاجر فقط</option>
           <option value="car">المركبات فقط</option>
-          <option value="motorcycle">الدبابات فقط</option>
+          <option value="motorcycle">الدراجات فقط</option>
         </select>
 
         <button id="pauseBtn">إيقاف التحديث</button>
@@ -529,7 +529,7 @@
           <div class="mini-stat">تطبيقات: <strong id="fleetApps">0</strong></div>
           <div class="mini-stat">متاجر: <strong id="fleetStores">0</strong></div>
           <div class="mini-stat">مركبات: <strong id="fleetCars">0</strong></div>
-          <div class="mini-stat">دبابات: <strong id="fleetBikes">0</strong></div>
+          <div class="mini-stat">دراجات: <strong id="fleetBikes">0</strong></div>
         </div>
         <div style="margin-top:14px">
           <canvas id="lineVehicles" height="190"></canvas>
@@ -718,14 +718,14 @@
 
   const vehicleTypes = [
     { type:"car", label:"مركبة توصيل" },
-    { type:"motorcycle", label:"دباب توصيل" }
+    { type:"motorcycle", label:"دراجة توصيل" }
   ];
 
   const statuses = [
-    { text:"نشطة الآن", className:"live" },
-    { text:"في طريقها للاستلام", className:"wait" },
-    { text:"في طريقها للتسليم", className:"live" },
-    { text:"متوقفة مؤقتًا", className:"wait" }
+    { text:"نشطة الآن", className:"live", movable:true },
+    { text:"في طريقها للاستلام", className:"wait", movable:true },
+    { text:"في طريقها للتسليم", className:"live", movable:true },
+    { text:"متوقفة مؤقتًا", className:"wait", movable:false }
   ];
 
   function setCity(key){
@@ -813,7 +813,7 @@
         </div>
         <div class="popup-grid popup-meta">
           <div><strong>الجهة:</strong> ${vehicle.brand}</div>
-          <div><strong>نوع الأصل:</strong> ${vehicle.type === "car" ? "سيارة" : "دراجة نارية"}</div>
+          <div><strong>نوع الأصل:</strong> ${vehicle.type === "car" ? "مركبة توصيل" : "دراجة توصيل"}</div>
           <div><strong>مصدر البيانات:</strong> ${vehicle.source}</div>
           <div><strong>آخر تحديث:</strong> الآن</div>
         </div>
@@ -882,6 +882,7 @@
         source: op.source,
         status: status.text,
         statusClass: status.className,
+        movable: status.movable,
         marker: null
       };
 
@@ -983,6 +984,7 @@
     const s = getRandomStatus();
     v.status = s.text;
     v.statusClass = s.className;
+    v.movable = s.movable;
     v.marker.setPopupContent(popupHTML(v));
   }
 
@@ -998,11 +1000,16 @@
       for(let i = 0; i < liveVehicles.length; i++){
         const vehicle = liveVehicles[i];
         const marker = vehicle.marker;
-        const reached = stepVehicle(marker, vehicleTargets[i], 0.0018);
 
         if(Math.random() > 0.93){
           refreshVehicleStatus(i);
         }
+
+        if(!vehicle.movable){
+          continue;
+        }
+
+        const reached = stepVehicle(marker, vehicleTargets[i], 0.0018);
 
         if(reached){
           vehicleTargets[i] = randomAround(center, 8);
