@@ -16,7 +16,6 @@
   <style>
     :root{
       --bg:#07111f;
-      --panel:#0d1728;
       --text:#edf4ff;
       --muted:#97a8ca;
       --border:rgba(255,255,255,.08);
@@ -26,7 +25,6 @@
       --store:#60a5fa;
       --warning:#f59e0b;
       --success:#22c55e;
-      --danger:#ef4444;
     }
 
     *{box-sizing:border-box}
@@ -80,7 +78,6 @@
     .brand p{margin:0;color:var(--muted);font-size:12px}
 
     .nav{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-
     .nav a{
       text-decoration:none;
       color:var(--muted);
@@ -92,15 +89,9 @@
       border:1px solid transparent;
       transition:.2s;
     }
-
     .nav a.active{
       background:rgba(45,212,191,.10);
       border-color:rgba(45,212,191,.25);
-      color:var(--text);
-    }
-
-    .nav a:hover{
-      border-color:var(--border);
       color:var(--text);
     }
 
@@ -140,29 +131,11 @@
       line-height:1.7;
     }
 
-    .legend{
-      margin-top:16px;
-      display:grid;
-      gap:8px;
-    }
+    .legend{margin-top:16px;display:grid;gap:8px}
+    .legend-item{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
+    .legend-swatch{width:12px;height:12px;border-radius:50%}
 
-    .legend-item{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .legend-swatch{
-      width:12px;
-      height:12px;
-      border-radius:50%;
-    }
-
-    .main{
-      padding:18px 18px 40px;
-    }
+    .main{padding:18px 18px 40px}
 
     .topbar{
       display:flex;
@@ -173,24 +146,10 @@
       flex-wrap:wrap;
     }
 
-    .title h2{
-      margin:0;
-      font-size:24px;
-    }
+    .title h2{margin:0;font-size:24px}
+    .title p{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.8}
 
-    .title p{
-      margin:4px 0 0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.8;
-    }
-
-    .controls{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 
     select, button{
       background:rgba(255,255,255,.04);
@@ -201,11 +160,6 @@
       outline:none;
       font-family:inherit;
       cursor:pointer;
-    }
-
-    button:hover, select:hover{
-      border-color:rgba(96,165,250,.35);
-      transform:translateY(-1px);
     }
 
     .grid{
@@ -224,12 +178,7 @@
       position:relative;
     }
 
-    .card h3{
-      margin:0 0 8px;
-      font-size:14px;
-      color:var(--muted);
-      font-weight:700;
-    }
+    .card h3{margin:0 0 8px;font-size:14px;color:var(--muted);font-weight:700}
 
     .kpi{
       display:flex;
@@ -238,17 +187,8 @@
       gap:12px;
     }
 
-    .value{
-      font-size:28px;
-      font-weight:900;
-      line-height:1;
-    }
-
-    .sub{
-      color:var(--muted);
-      font-size:12px;
-      margin-top:4px;
-    }
+    .value{font-size:28px;font-weight:900;line-height:1}
+    .sub{color:var(--muted);font-size:12px;margin-top:4px}
 
     .delta{
       font-weight:800;
@@ -282,20 +222,14 @@
       color:var(--muted);
     }
 
-    .mini-stat strong{
-      color:var(--text);
-    }
+    .mini-stat strong{color:var(--text)}
 
     .span-3{grid-column:span 3;}
     .span-4{grid-column:span 4;}
     .span-8{grid-column:span 8;}
     .span-12{grid-column:span 12;}
 
-    .mapWrap{
-      height:460px;
-      padding:0;
-    }
-
+    .mapWrap{height:460px;padding:0}
     #map{
       width:100%;
       height:460px;
@@ -303,17 +237,18 @@
       overflow:hidden;
     }
 
-    .leaflet-container{
-      background:#091120;
+    .leaflet-container{background:#091120}
+    .leaflet-control-attribution{font-size:10px}
+
+    .leaflet-popup-content{
+      margin:12px 14px !important;
+      width:auto !important;
+      min-width:180px;
+      max-width:220px;
     }
 
-    .leaflet-control-attribution{
-      font-size:10px;
-    }
-
-    .vehicle-icon-img{
-      background:transparent !important;
-      border:none !important;
+    .leaflet-popup-content-wrapper{
+      border-radius:18px;
     }
 
     .vehicle-badge{
@@ -332,11 +267,12 @@
     .vehicle-badge.wait{background:var(--warning); color:#111827;}
 
     .popup-card{
-      min-width:240px;
+      width:100%;
+      max-width:220px;
       font-family:"Cairo", sans-serif;
       direction:rtl;
       text-align:right;
-      line-height:1.8;
+      line-height:1.7;
     }
 
     .popup-title{
@@ -452,19 +388,19 @@
       </div>
 
       <div class="controls">
-        <select id="citySelect" title="اختيار المدينة">
+        <select id="citySelect">
           <option value="riyadh" selected>الرياض</option>
           <option value="jeddah">جدة</option>
           <option value="dammam">الدمام</option>
         </select>
 
-        <select id="speedSelect" title="سرعة الحركة">
+        <select id="speedSelect">
           <option value="1200">هادئة</option>
           <option value="700" selected>عادية</option>
           <option value="400">سريعة</option>
         </select>
 
-        <select id="filterSelect" title="فلترة المركبات">
+        <select id="filterSelect">
           <option value="all" selected>عرض الجميع</option>
           <option value="app">التطبيقات فقط</option>
           <option value="store">المتاجر فقط</option>
@@ -551,9 +487,7 @@
         <div class="privacy">
           <div class="shield">🛡️</div>
           <div>
-            <p>
-              تعتمد هذه الواجهة على مؤشرات مجمّعة ومحاكاة توضيحية لشرح فكرة المرصد الذكي، دون جمع أي معلومات شخصية مباشرة عن الأفراد.
-            </p>
+            <p>تعتمد هذه الواجهة على مؤشرات مجمّعة ومحاكاة توضيحية لشرح فكرة المرصد الذكي، دون جمع أي معلومات شخصية مباشرة عن الأفراد.</p>
             <ul>
               <li>لا يتم عرض أسماء سائقين أو لوحات أو معرّفات أجهزة.</li>
               <li>يُعرض نوع الجهة ومصدر الإشارة الرقمية على مستوى تقديري فقط.</li>
@@ -754,49 +688,114 @@
     return statuses[Math.floor(Math.random() * statuses.length)];
   }
 
-  function createVehicleSVG(type, operatorType){
-    const color = operatorType === "app" ? "#2dd4bf" : "#60a5fa";
+  function drawCarIcon(color, isStopped){
+    const canvas = document.createElement("canvas");
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext("2d");
 
-    if(type === "car"){
-      return `
-        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 64 64">
-          <g>
-            <rect x="14" y="26" width="36" height="16" rx="6" fill="${color}" stroke="#ffffff" stroke-width="3"/>
-            <path d="M22 26 L28 18 H42 L48 26 Z" fill="${color}" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
-            <circle cx="24" cy="44" r="5" fill="#0b1220" stroke="#ffffff" stroke-width="3"/>
-            <circle cx="40" cy="44" r="5" fill="#0b1220" stroke="#ffffff" stroke-width="3"/>
-            <rect x="29" y="14" width="12" height="6" rx="2" fill="#ffffff"/>
-          </g>
-        </svg>
-      `;
-    }
+    ctx.globalAlpha = isStopped ? 0.45 : 1;
 
-    return `
-      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 64 64">
-        <g>
-          <circle cx="20" cy="44" r="7" fill="#0b1220" stroke="#ffffff" stroke-width="3"/>
-          <circle cx="46" cy="44" r="7" fill="#0b1220" stroke="#ffffff" stroke-width="3"/>
-          <path d="M20 44 L28 30 L39 30 L46 44" fill="none" stroke="${color}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M30 30 L24 22 H34" fill="none" stroke="${color}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-          <rect x="36" y="24" width="10" height="6" rx="2" fill="${color}" stroke="#ffffff" stroke-width="2"/>
-        </g>
-      </svg>
-    `;
+    ctx.fillStyle = color;
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 4;
+
+    ctx.beginPath();
+    ctx.roundRect(14, 26, 36, 16, 6);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(22, 26);
+    ctx.lineTo(28, 18);
+    ctx.lineTo(42, 18);
+    ctx.lineTo(48, 26);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = "#0b1220";
+    ctx.beginPath();
+    ctx.arc(24, 44, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(40, 44, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.roundRect(29, 14, 12, 6, 2);
+    ctx.fill();
+
+    return canvas.toDataURL("image/png");
   }
 
-  function svgToDataUrl(svg){
-    return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+  function drawBikeIcon(color, isStopped){
+    const canvas = document.createElement("canvas");
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext("2d");
+
+    ctx.globalAlpha = isStopped ? 0.45 : 1;
+
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 3;
+    ctx.fillStyle = "#0b1220";
+
+    ctx.beginPath();
+    ctx.arc(20, 44, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(46, 44, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    ctx.beginPath();
+    ctx.moveTo(20, 44);
+    ctx.lineTo(28, 30);
+    ctx.lineTo(39, 30);
+    ctx.lineTo(46, 44);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(30, 30);
+    ctx.lineTo(24, 22);
+    ctx.lineTo(34, 22);
+    ctx.stroke();
+
+    ctx.fillStyle = color;
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(36, 24, 10, 6, 2);
+    ctx.fill();
+    ctx.stroke();
+
+    return canvas.toDataURL("image/png");
   }
 
   function getVehicleIcon(vehicle){
-    const svg = createVehicleSVG(vehicle.type, vehicle.operatorType);
+    const color = vehicle.operatorType === "app" ? "#2dd4bf" : "#60a5fa";
+    const isStopped = !vehicle.movable;
+    const iconUrl = vehicle.type === "car"
+      ? drawCarIcon(color, isStopped)
+      : drawBikeIcon(color, isStopped);
 
     return L.icon({
-      iconUrl: svgToDataUrl(svg),
+      iconUrl,
       iconSize: vehicle.type === "car" ? [34, 34] : [30, 30],
       iconAnchor: vehicle.type === "car" ? [17, 17] : [15, 15],
-      popupAnchor: [0, -14],
-      className: "vehicle-icon-img"
+      popupAnchor: [0, -14]
     });
   }
 
@@ -894,7 +893,11 @@
       marker.bindPopup(popupHTML(vehicle), {
         closeButton: true,
         autoClose: true,
-        closeOnClick: true
+        closeOnClick: true,
+        autoPan: true,
+        keepInView: true,
+        maxWidth: 240,
+        minWidth: 180
       });
 
       marker.on("click", function(e){
@@ -932,9 +935,7 @@
 
   function updateObservedBars(){
     const center = cityCenters[currentCityKey].center;
-    let zone1 = 0;
-    let zone2 = 0;
-    let zone3 = 0;
+    let zone1 = 0, zone2 = 0, zone3 = 0;
 
     for(const v of liveVehicles){
       if(!map.hasLayer(v.marker)) continue;
@@ -985,6 +986,8 @@
     v.status = s.text;
     v.statusClass = s.className;
     v.movable = s.movable;
+
+    v.marker.setIcon(getVehicleIcon(v));
     v.marker.setPopupContent(popupHTML(v));
   }
 
