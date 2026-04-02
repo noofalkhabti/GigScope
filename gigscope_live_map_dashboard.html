@@ -11,12 +11,12 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <style>
     :root{
       --bg:#07111f;
+      --panel:#0d1728;
       --text:#edf4ff;
       --muted:#97a8ca;
       --border:rgba(255,255,255,.08);
@@ -26,6 +26,7 @@
       --store:#60a5fa;
       --warning:#f59e0b;
       --success:#22c55e;
+      --danger:#ef4444;
     }
 
     *{box-sizing:border-box}
@@ -98,6 +99,11 @@
       color:var(--text);
     }
 
+    .nav a:hover{
+      border-color:var(--border);
+      color:var(--text);
+    }
+
     .tag{
       font-size:11px;
       padding:2px 8px;
@@ -134,11 +140,29 @@
       line-height:1.7;
     }
 
-    .legend{margin-top:16px;display:grid;gap:8px}
-    .legend-item{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
-    .legend-swatch{width:12px;height:12px;border-radius:50%}
+    .legend{
+      margin-top:16px;
+      display:grid;
+      gap:8px;
+    }
 
-    .main{padding:18px 18px 40px}
+    .legend-item{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .legend-swatch{
+      width:12px;
+      height:12px;
+      border-radius:50%;
+    }
+
+    .main{
+      padding:18px 18px 40px;
+    }
 
     .topbar{
       display:flex;
@@ -149,10 +173,24 @@
       flex-wrap:wrap;
     }
 
-    .title h2{margin:0;font-size:24px}
-    .title p{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.8}
+    .title h2{
+      margin:0;
+      font-size:24px;
+    }
 
-    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .title p{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.8;
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
 
     select, button{
       background:rgba(255,255,255,.04);
@@ -163,6 +201,11 @@
       outline:none;
       font-family:inherit;
       cursor:pointer;
+    }
+
+    button:hover, select:hover{
+      border-color:rgba(96,165,250,.35);
+      transform:translateY(-1px);
     }
 
     .grid{
@@ -195,8 +238,17 @@
       gap:12px;
     }
 
-    .value{font-size:28px;font-weight:900;line-height:1}
-    .sub{color:var(--muted);font-size:12px;margin-top:4px}
+    .value{
+      font-size:28px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:4px;
+    }
 
     .delta{
       font-weight:800;
@@ -230,14 +282,20 @@
       color:var(--muted);
     }
 
-    .mini-stat strong{color:var(--text)}
+    .mini-stat strong{
+      color:var(--text);
+    }
 
     .span-3{grid-column:span 3;}
     .span-4{grid-column:span 4;}
     .span-8{grid-column:span 8;}
     .span-12{grid-column:span 12;}
 
-    .mapWrap{height:460px;padding:0}
+    .mapWrap{
+      height:460px;
+      padding:0;
+    }
+
     #map{
       width:100%;
       height:460px;
@@ -251,23 +309,6 @@
 
     .leaflet-control-attribution{
       font-size:10px;
-    }
-
-    .vehicle-icon{
-      width:20px;
-      height:20px;
-      border-radius:50%;
-      border:2px solid rgba(255,255,255,.85);
-      background:#0b1220;
-      box-shadow:none;
-    }
-
-    .vehicle-icon.app{
-      background:var(--app);
-    }
-
-    .vehicle-icon.store{
-      background:var(--store);
     }
 
     .vehicle-badge{
@@ -387,7 +428,7 @@
     <div class="pill"><span class="dot"></span> تحديث حي للمركبات والمؤشرات</div>
 
     <div class="mini-note">
-      الخريطة تعرض محاكاة ذكية لحركة مركبات ودبابات التوصيل مع طبقة نشاط حراري ومعلومات مصدر البيانات.
+      الخريطة تعرض محاكاة ذكية لحركة مركبات ودبابات التوصيل مع معلومات نوع الجهة ومصدر البيانات.
     </div>
 
     <div class="legend">
@@ -402,23 +443,23 @@
     <div class="topbar">
       <div class="title">
         <h2>GigScope — لوحة حركة مركبات التوصيل الذكية</h2>
-        <p>واجهة احترافية تعرض مؤشرات اقتصاد المنصات من خلال حركة مركبات حيّة وبيانات وصفية عن نوع الجهة ومصدر الإشارة الرقمية.</p>
+        <p>واجهة احترافية تعرض مؤشرات اقتصاد المنصات من خلال حركة نقاط حيّة وبيانات وصفية عن نوع الجهة ومصدر الإشارة الرقمية.</p>
       </div>
 
       <div class="controls">
-        <select id="citySelect">
+        <select id="citySelect" title="اختيار المدينة">
           <option value="riyadh" selected>الرياض</option>
           <option value="jeddah">جدة</option>
           <option value="dammam">الدمام</option>
         </select>
 
-        <select id="speedSelect">
+        <select id="speedSelect" title="سرعة الحركة">
           <option value="1200">هادئة</option>
           <option value="700" selected>عادية</option>
           <option value="400">سريعة</option>
         </select>
 
-        <select id="filterSelect">
+        <select id="filterSelect" title="فلترة المركبات">
           <option value="all" selected>عرض الجميع</option>
           <option value="app">التطبيقات فقط</option>
           <option value="store">المتاجر فقط</option>
@@ -473,7 +514,7 @@
       </div>
 
       <div class="card span-8 mapWrap">
-        <div id="map"></div>
+        <div id="map" aria-label="خريطة تفاعلية لمركبات التوصيل"></div>
       </div>
 
       <div class="card span-4">
@@ -505,11 +546,13 @@
         <div class="privacy">
           <div class="shield">🛡️</div>
           <div>
-            <p>تعتمد هذه الواجهة على مؤشرات مجمّعة ومحاكاة توضيحية لشرح فكرة المرصد الذكي، دون جمع أي معلومات شخصية مباشرة عن الأفراد.</p>
+            <p>
+              تعتمد هذه الواجهة على مؤشرات مجمّعة ومحاكاة توضيحية لشرح فكرة المرصد الذكي، دون جمع أي معلومات شخصية مباشرة عن الأفراد.
+            </p>
             <ul>
               <li>لا يتم عرض أسماء سائقين أو لوحات أو معرّفات أجهزة.</li>
               <li>يُعرض نوع الجهة ومصدر الإشارة الرقمية على مستوى تقديري فقط.</li>
-              <li>يمكن لاحقًا ربط المنصة بمصادر بيانات عامة وواجهات API وطبقات IoT ضمن ضوابط الخصوصية.</li>
+              <li>تم ضبط الخريطة لمنع التكبير والتغيّر بمجرد مرور الماوس عليها أثناء العرض.</li>
             </ul>
             <div class="footnote">* حركة المركبات المعروضة في هذه النسخة هي محاكاة مرئية لشرح الفكرة التحكيمية.</div>
           </div>
@@ -595,18 +638,18 @@
   });
 
   function computeEstimatedWorkers(){
-    const v = vehiclesSeries[vehiclesSeries.length-1];
-    const t = trendsSeries[trendsSeries.length-1];
+    const v = vehiclesSeries[vehiclesSeries.length - 1];
+    const t = trendsSeries[trendsSeries.length - 1];
     return Math.round((v * 9) + (t * 12));
   }
 
   function computeDelta(){
-    const lastV = vehiclesSeries[vehiclesSeries.length-1];
-    const prevV = vehiclesSeries[vehiclesSeries.length-2] ?? lastV;
-    const lastT = trendsSeries[trendsSeries.length-1];
-    const prevT = trendsSeries[trendsSeries.length-2] ?? lastT;
-    const last = (lastV*9)+(lastT*12);
-    const prev = (prevV*9)+(prevT*12);
+    const lastV = vehiclesSeries[vehiclesSeries.length - 1];
+    const prevV = vehiclesSeries[vehiclesSeries.length - 2] ?? lastV;
+    const lastT = trendsSeries[trendsSeries.length - 1];
+    const prevT = trendsSeries[trendsSeries.length - 2] ?? lastT;
+    const last = (lastV * 9) + (lastT * 12);
+    const prev = (prevV * 9) + (prevT * 12);
     return prev === 0 ? 0 : ((last - prev) / prev) * 100;
   }
 
@@ -629,12 +672,19 @@
   refreshKPIs();
 
   const cityCenters = {
-    riyadh:  { name:"الرياض", center:[24.7136, 46.6753], zoom:11 },
-    jeddah:  { name:"جدة", center:[21.4858, 39.1925], zoom:11 },
-    dammam:  { name:"الدمام", center:[26.4207, 50.0888], zoom:11 }
+    riyadh: { name:"الرياض", center:[24.7136, 46.6753], zoom:11 },
+    jeddah: { name:"جدة", center:[21.4858, 39.1925], zoom:11 },
+    dammam: { name:"الدمام", center:[26.4207, 50.0888], zoom:11 }
   };
 
-  const map = L.map("map", { zoomControl:true });
+  const map = L.map("map", {
+    zoomControl: true,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    tap: false
+  });
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -645,8 +695,6 @@
   let vehiclesN = 24;
   let liveVehicles = [];
   let vehicleTargets = [];
-  let heatPoints = [];
-  let heatLayer = null;
   let running = true;
   let speedMs = 700;
   let moveTick = null;
@@ -682,11 +730,11 @@
 
   setCity("riyadh");
 
-  function randomAround([lat,lng], kmRadius){
+  function randomAround([lat, lng], kmRadius){
     const r = kmRadius / 111;
     const u = Math.random() * 2 - 1;
     const v = Math.random() * 2 - 1;
-    return [lat + u*r, lng + v*r*Math.cos(lat*Math.PI/180)];
+    return [lat + u * r, lng + v * r * Math.cos(lat * Math.PI / 180)];
   }
 
   function getRandomOperator(){
@@ -701,20 +749,21 @@
     return statuses[Math.floor(Math.random() * statuses.length)];
   }
 
-  function buildVehicleIcon(vehicle){
-    const labelClass = vehicle.operatorType === "app" ? "app" : "store";
-    return L.divIcon({
-      className: "",
-      html: `<div class="vehicle-icon ${labelClass}"></div>`,
-      iconSize: [20,20],
-      iconAnchor: [10,10],
-      popupAnchor: [0,-10]
-    });
+  function getVehicleStyle(vehicle){
+    return {
+      radius: vehicle.type === "car" ? 9 : 6,
+      fillColor: vehicle.operatorType === "app" ? "#2dd4bf" : "#60a5fa",
+      color: "#ffffff",
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.95
+    };
   }
 
   function popupHTML(vehicle){
     const operatorLabel = vehicle.operatorType === "app" ? "تطبيق توصيل" : "متجر";
     const operatorClass = vehicle.operatorType === "app" ? "app" : "store";
+
     return `
       <div class="popup-card">
         <div class="popup-title">${vehicle.vehicleLabel} #${vehicle.id}</div>
@@ -775,7 +824,6 @@
 
     liveVehicles = [];
     vehicleTargets = [];
-    heatPoints = [];
 
     const center = cityCenters[currentCityKey].center;
 
@@ -797,42 +845,32 @@
         marker: null
       };
 
-      const marker = L.marker(pos, { icon: buildVehicleIcon(vehicle) }).addTo(map);
+      const marker = L.circleMarker(pos, getVehicleStyle(vehicle)).addTo(map);
 
       marker.bindPopup(popupHTML(vehicle), {
-        closeButton:false,
-        offset:[0,-8]
+        closeButton: true,
+        autoClose: true,
+        closeOnClick: true
       });
 
-      marker.on("mouseover", function(){ this.openPopup(); });
-      marker.on("mouseout", function(){ this.closePopup(); });
+      marker.on("click", function(e){
+        L.DomEvent.stopPropagation(e);
+        this.openPopup();
+      });
 
       vehicle.marker = marker;
       liveVehicles.push(vehicle);
       vehicleTargets.push(randomAround(center, 8));
     }
 
-    for(let j = 0; j < 55; j++){
-      const p = randomAround(center, 10);
-      const intensity = Math.random() * 0.8 + 0.2;
-      heatPoints.push([p[0], p[1], intensity]);
-    }
-
-    if(heatLayer) map.removeLayer(heatLayer);
-    heatLayer = L.heatLayer(heatPoints, {
-      radius: 28,
-      blur: 22,
-      maxZoom: 13
-    }).addTo(map);
-
     applyFilter();
   }
 
-  function stepVehicle(marker, target, step=0.0022){
+  function stepVehicle(marker, target, step = 0.0022){
     const p = marker.getLatLng();
     const dLat = target[0] - p.lat;
     const dLng = target[1] - p.lng;
-    const dist = Math.sqrt(dLat*dLat + dLng*dLng);
+    const dist = Math.sqrt(dLat * dLat + dLng * dLng);
 
     if(dist < step){
       marker.setLatLng(target);
@@ -840,46 +878,34 @@
     }
 
     marker.setLatLng([
-      p.lat + (dLat/dist) * step,
-      p.lng + (dLng/dist) * step
+      p.lat + (dLat / dist) * step,
+      p.lng + (dLng / dist) * step
     ]);
 
     return false;
   }
 
-  function jitterHeat(){
-    const center = cityCenters[currentCityKey].center;
-
-    for(let i = 0; i < heatPoints.length; i++){
-      heatPoints[i][0] += (Math.random() - 0.5) * 0.0010;
-      heatPoints[i][1] += (Math.random() - 0.5) * 0.0010;
-      heatPoints[i][2] = clamp(heatPoints[i][2] + (Math.random() - 0.5) * 0.12, 0.1, 1.0);
-
-      heatPoints[i][0] = clamp(heatPoints[i][0], center[0]-0.25, center[0]+0.25);
-      heatPoints[i][1] = clamp(heatPoints[i][1], center[1]-0.35, center[1]+0.35);
-    }
-
-    heatLayer.setLatLngs(heatPoints);
-  }
-
   function updateObservedBars(){
     const center = cityCenters[currentCityKey].center;
-    let z1 = 0, z2 = 0, z3 = 0;
+    let appCount = 0;
+    let storeCount = 0;
+    let farCount = 0;
 
-    for(const hp of heatPoints){
-      const dLat = hp[0] - center[0];
-      const dLng = hp[1] - center[1];
+    for(const v of liveVehicles){
+      const p = v.marker.getLatLng();
+      const dLat = p.lat - center[0];
+      const dLng = p.lng - center[1];
       const d = Math.sqrt(dLat*dLat + dLng*dLng);
 
-      if(d < 0.06) z1 += hp[2];
-      else if(d < 0.11) z2 += hp[2];
-      else z3 += hp[2];
+      if(d < 0.05) appCount += 1;
+      else if(d < 0.10) storeCount += 1;
+      else farCount += 1;
     }
 
     observedByZone = [
-      Math.round(180 + z1*60),
-      Math.round(160 + z2*55),
-      Math.round(170 + z3*50)
+      180 + appCount * 10,
+      160 + storeCount * 10,
+      170 + farCount * 10
     ];
 
     barCompare.data.datasets[1].data = observedByZone;
@@ -887,13 +913,15 @@
   }
 
   function pushNewMonthPoint(){
-    const lastV = vehiclesSeries[vehiclesSeries.length-1];
-    const lastT = trendsSeries[trendsSeries.length-1];
-    const newV = clamp(lastV + Math.round((Math.random()*20)+5), 80, 400);
-    const newT = clamp(lastT + Math.round((Math.random()*4)+1), 45, 100);
+    const lastV = vehiclesSeries[vehiclesSeries.length - 1];
+    const lastT = trendsSeries[trendsSeries.length - 1];
+    const newV = clamp(lastV + Math.round((Math.random() * 20) + 5), 80, 400);
+    const newT = clamp(lastT + Math.round((Math.random() * 4) + 1), 45, 100);
 
-    vehiclesSeries.push(newV); vehiclesSeries.shift();
-    trendsSeries.push(newT); trendsSeries.shift();
+    vehiclesSeries.push(newV);
+    vehiclesSeries.shift();
+    trendsSeries.push(newT);
+    trendsSeries.shift();
 
     lineVehicles.data.datasets[0].data = vehiclesSeries;
     lineTrends.data.datasets[0].data = trendsSeries;
@@ -925,8 +953,7 @@
       for(let i = 0; i < liveVehicles.length; i++){
         const vehicle = liveVehicles[i];
         const marker = vehicle.marker;
-
-        const reached = stepVehicle(marker, vehicleTargets[i], 0.0020);
+        const reached = stepVehicle(marker, vehicleTargets[i], 0.0018);
 
         if(Math.random() > 0.93){
           refreshVehicleStatus(i);
@@ -937,7 +964,6 @@
         }
       }
 
-      jitterHeat();
       updateObservedBars();
     }, speedMs);
 
@@ -949,6 +975,10 @@
 
   initVehicles();
   startLoop();
+
+  map.on("click", function(){
+    map.closePopup();
+  });
 
   document.getElementById("pauseBtn").addEventListener("click", () => {
     running = !running;
