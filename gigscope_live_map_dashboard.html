@@ -9,23 +9,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    crossorigin=""
-  />
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    crossorigin=""
-  ></script>
-
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <style>
     :root{
       --bg:#07111f;
-      --panel:#0d1728;
       --text:#edf4ff;
       --muted:#97a8ca;
       --border:rgba(255,255,255,.08);
@@ -35,7 +26,6 @@
       --store:#60a5fa;
       --warning:#f59e0b;
       --success:#22c55e;
-      --danger:#ef4444;
     }
 
     *{box-sizing:border-box}
@@ -85,24 +75,10 @@
       box-shadow:var(--shadow);
     }
 
-    .brand h1{
-      margin:0;
-      font-size:18px;
-      line-height:1.1;
-    }
+    .brand h1{margin:0;font-size:18px;line-height:1.1}
+    .brand p{margin:0;color:var(--muted);font-size:12px}
 
-    .brand p{
-      margin:0;
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    .nav{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      margin-top:12px;
-    }
+    .nav{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 
     .nav a{
       text-decoration:none;
@@ -119,11 +95,6 @@
     .nav a.active{
       background:rgba(45,212,191,.10);
       border-color:rgba(45,212,191,.25);
-      color:var(--text);
-    }
-
-    .nav a:hover{
-      border-color:var(--border);
       color:var(--text);
     }
 
@@ -163,29 +134,11 @@
       line-height:1.7;
     }
 
-    .legend{
-      margin-top:16px;
-      display:grid;
-      gap:8px;
-    }
+    .legend{margin-top:16px;display:grid;gap:8px}
+    .legend-item{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
+    .legend-swatch{width:12px;height:12px;border-radius:50%}
 
-    .legend-item{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .legend-swatch{
-      width:12px;
-      height:12px;
-      border-radius:50%;
-    }
-
-    .main{
-      padding:18px 18px 40px;
-    }
+    .main{padding:18px 18px 40px}
 
     .topbar{
       display:flex;
@@ -196,24 +149,10 @@
       flex-wrap:wrap;
     }
 
-    .title h2{
-      margin:0;
-      font-size:24px;
-    }
+    .title h2{margin:0;font-size:24px}
+    .title p{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.8}
 
-    .title p{
-      margin:4px 0 0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.8;
-    }
-
-    .controls{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 
     select, button{
       background:rgba(255,255,255,.04);
@@ -224,11 +163,6 @@
       outline:none;
       font-family:inherit;
       cursor:pointer;
-    }
-
-    button:hover, select:hover{
-      border-color:rgba(96,165,250,.35);
-      transform:translateY(-1px);
     }
 
     .grid{
@@ -261,17 +195,8 @@
       gap:12px;
     }
 
-    .value{
-      font-size:28px;
-      font-weight:900;
-      line-height:1;
-    }
-
-    .sub{
-      color:var(--muted);
-      font-size:12px;
-      margin-top:4px;
-    }
+    .value{font-size:28px;font-weight:900;line-height:1}
+    .sub{color:var(--muted);font-size:12px;margin-top:4px}
 
     .delta{
       font-weight:800;
@@ -305,20 +230,14 @@
       color:var(--muted);
     }
 
-    .mini-stat strong{
-      color:var(--text);
-    }
+    .mini-stat strong{color:var(--text)}
 
     .span-3{grid-column:span 3;}
     .span-4{grid-column:span 4;}
     .span-8{grid-column:span 8;}
     .span-12{grid-column:span 12;}
 
-    .mapWrap{
-      height:460px;
-      padding:0;
-    }
-
+    .mapWrap{height:460px;padding:0}
     #map{
       width:100%;
       height:460px;
@@ -327,7 +246,6 @@
     }
 
     .leaflet-container{
-      filter:saturate(1.05) contrast(1.04) brightness(.95);
       background:#091120;
     }
 
@@ -335,35 +253,21 @@
       font-size:10px;
     }
 
-    /* التعديل المهم هنا */
     .vehicle-icon{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      width:34px;
-      height:34px;
+      width:20px;
+      height:20px;
       border-radius:50%;
-      border:1px solid rgba(255,255,255,.18);
+      border:2px solid rgba(255,255,255,.85);
       background:#0b1220;
-      font-size:14px;
-      line-height:1;
-      overflow:hidden;
-      color:#fff;
-      box-shadow:0 0 10px rgba(0,0,0,.25);
+      box-shadow:none;
     }
 
     .vehicle-icon.app{
-      box-shadow:0 0 12px rgba(45,212,191,.35);
+      background:var(--app);
     }
 
     .vehicle-icon.store{
-      box-shadow:0 0 12px rgba(96,165,250,.35);
-    }
-
-    .vehicle-icon span{
-      display:block;
-      line-height:1;
-      transform:translateY(0);
+      background:var(--store);
     }
 
     .vehicle-badge{
@@ -502,19 +406,19 @@
       </div>
 
       <div class="controls">
-        <select id="citySelect" title="اختيار المدينة">
+        <select id="citySelect">
           <option value="riyadh" selected>الرياض</option>
           <option value="jeddah">جدة</option>
           <option value="dammam">الدمام</option>
         </select>
 
-        <select id="speedSelect" title="سرعة الحركة">
+        <select id="speedSelect">
           <option value="1200">هادئة</option>
           <option value="700" selected>عادية</option>
           <option value="400">سريعة</option>
         </select>
 
-        <select id="filterSelect" title="فلترة المركبات">
+        <select id="filterSelect">
           <option value="all" selected>عرض الجميع</option>
           <option value="app">التطبيقات فقط</option>
           <option value="store">المتاجر فقط</option>
@@ -569,7 +473,7 @@
       </div>
 
       <div class="card span-8 mapWrap">
-        <div id="map" aria-label="خريطة تفاعلية لمركبات التوصيل"></div>
+        <div id="map"></div>
       </div>
 
       <div class="card span-4">
@@ -601,9 +505,7 @@
         <div class="privacy">
           <div class="shield">🛡️</div>
           <div>
-            <p>
-              تعتمد هذه الواجهة على مؤشرات مجمّعة ومحاكاة توضيحية لشرح فكرة المرصد الذكي، دون جمع أي معلومات شخصية مباشرة عن الأفراد.
-            </p>
+            <p>تعتمد هذه الواجهة على مؤشرات مجمّعة ومحاكاة توضيحية لشرح فكرة المرصد الذكي، دون جمع أي معلومات شخصية مباشرة عن الأفراد.</p>
             <ul>
               <li>لا يتم عرض أسماء سائقين أو لوحات أو معرّفات أجهزة.</li>
               <li>يُعرض نوع الجهة ومصدر الإشارة الرقمية على مستوى تقديري فقط.</li>
@@ -669,11 +571,7 @@
       plugins:{legend:{display:false}},
       scales:{
         x:{grid:{display:false}},
-        y:{
-          grid:{color:"rgba(255,255,255,.06)"},
-          suggestedMin:40,
-          suggestedMax:100
-        }
+        y:{grid:{color:"rgba(255,255,255,.06)"}, suggestedMin:40, suggestedMax:100}
       }
     }
   });
@@ -743,17 +641,6 @@
     attribution: "&copy; OpenStreetMap contributors"
   }).addTo(map);
 
-  map.createPane("darkPane");
-  map.getPane("darkPane").style.zIndex = 250;
-
-  L.rectangle([[-90,-180],[90,180]], {
-    pane:"darkPane",
-    color:"transparent",
-    fillColor:"#07111f",
-    fillOpacity:0.22,
-    interactive:false
-  }).addTo(map);
-
   let currentCityKey = "riyadh";
   let vehiclesN = 24;
   let liveVehicles = [];
@@ -776,10 +663,9 @@
     { brand:"Panda", operatorType:"store", source:"Store Delivery Signal + Area Traffic Model" }
   ];
 
-  /* استخدمنا رموز أكثر أمانًا من الإيموجي الثقيلة */
   const vehicleTypes = [
-    { type:"car", label:"مركبة توصيل", icon:"■" },
-    { type:"motorcycle", label:"دباب توصيل", icon:"●" }
+    { type:"car", label:"مركبة توصيل" },
+    { type:"motorcycle", label:"دباب توصيل" }
   ];
 
   const statuses = [
@@ -819,10 +705,10 @@
     const labelClass = vehicle.operatorType === "app" ? "app" : "store";
     return L.divIcon({
       className: "",
-      html: `<div class="vehicle-icon ${labelClass}" title="${vehicle.vehicleLabel}"><span>${vehicle.icon}</span></div>`,
-      iconSize: [34,34],
-      iconAnchor: [17,17],
-      popupAnchor: [0,-12]
+      html: `<div class="vehicle-icon ${labelClass}"></div>`,
+      iconSize: [20,20],
+      iconAnchor: [10,10],
+      popupAnchor: [0,-10]
     });
   }
 
@@ -903,7 +789,6 @@
         id: i + 1,
         type: vt.type,
         vehicleLabel: vt.label,
-        icon: vt.icon,
         operatorType: op.operatorType,
         brand: op.brand,
         source: op.source,
@@ -919,13 +804,8 @@
         offset:[0,-8]
       });
 
-      marker.on("mouseover", function(){
-        this.openPopup();
-      });
-
-      marker.on("mouseout", function(){
-        this.closePopup();
-      });
+      marker.on("mouseover", function(){ this.openPopup(); });
+      marker.on("mouseout", function(){ this.closePopup(); });
 
       vehicle.marker = marker;
       liveVehicles.push(vehicle);
@@ -1012,10 +892,8 @@
     const newV = clamp(lastV + Math.round((Math.random()*20)+5), 80, 400);
     const newT = clamp(lastT + Math.round((Math.random()*4)+1), 45, 100);
 
-    vehiclesSeries.push(newV);
-    vehiclesSeries.shift();
-    trendsSeries.push(newT);
-    trendsSeries.shift();
+    vehiclesSeries.push(newV); vehiclesSeries.shift();
+    trendsSeries.push(newT); trendsSeries.shift();
 
     lineVehicles.data.datasets[0].data = vehiclesSeries;
     lineTrends.data.datasets[0].data = trendsSeries;
